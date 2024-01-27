@@ -11,7 +11,7 @@ This functionality is designed to streamline Discovery Object testing and replac
 ## Introduction
 
 * * * * * * * * * * *
-The GSA-ICAM-Card-Builder signs CHUID and CBEFF containers and updates Security Object containers 
+The GSA-ICAM-Card-Builder signs CHUID and CBEFF containers and updates Security Object containers
 for FIPS 201-2 PIV and PIV-I cards.  This software was originally derived from the GSA PKCS7
 signing tool.  The  original work was unable to:
 
@@ -29,18 +29,20 @@ signing tool.  The  original work was unable to:
   2. Since we need to place these new objects on a card, there was no way to populate a card.
 
 Currently, this project includes tools to handle all of the above *except the
-card data populator*. 
+card data populator*.
 
 ## Getting Started
 
 ### JDK Releases Prior to 1.8.0_141
+
 Due to a change in the bytecode verifier in Java 8, the bytecode verifier
 rejects the ContentSigningTool class.  It has been fixed in JDK 1.8.0_141.
-Oracle since a lot of code broke.  If using an earlier JDK, insert the 
+Oracle since a lot of code broke.  If using an earlier JDK, insert the
 "-noverify" option on the startup scripts mentioned below to get around the
 issue.  The risk is that the bytecode isn't being verified.
 
 ### Extracting the tools
+
 To use the tools, click Releases on the main repo page, download and unzip the latest ZIP file, `gsa-icam-card-builder-vM.m.b.zip` containing the scripts, signing application, libraries, configuration files and artifacts. If you'd like to hack around in the source of the signing tool, download the `-devel` version of the same release.
 
 In conjunction with the signing tool,  we created the objects for eight new ICAM test cards, which are referred to as *Gen 3*:
@@ -74,8 +76,8 @@ In conjunction with the signing tool,  we created the objects for eight new ICAM
 | 58 | Revoked Card Authentication Cert |
 | ~59~ | ~Valid Card to Simulate Card 51 at Time of Access~ |
 
-The artifacts used to create these cards are included beneath the `cards` 
-directory.  The objects in each card's subdirectory can be encoded directly on 
+The artifacts used to create these cards are included beneath the `cards`
+directory.  The objects in each card's subdirectory can be encoded directly on
 to a PIV card.  It may be necessary to precede the object files with a container-
 specific TLV as described in SP 800-73-4's data model.  This system does not
 current supply a method for doing this if your card data populator doesn't handle
@@ -91,21 +93,24 @@ This project consists of several related functions:
 As of 3/1/2019, (4) above is in development and is not displayed on the GSA ICAM Card Builder GUI.
 
 ## Certificate Generation
+
 The `certutils` directory contains a bash script, `mkcert.sh` that uses command
 line options to select an OpenSSL `.cnf` file that can request and sign private keys
-for any of the four certificates on a PIV or PIV-I card.  A batch-mode utility, 
+for any of the four certificates on a PIV or PIV-I card.  A batch-mode utility,
 
-But it's easier to use the `makeall.sh` script which invokes `mkcert.sh` 
+But it's easier to use the `makeall.sh` script which invokes `mkcert.sh`
 to create the certificates for all of the Gen 3 ICAM Test cards in one shot.  
 Each certificate for each Gen 3 ICAM Test card is defined by its own OpenSSL
 `.cnf` file.
 
 ## Content Signing
+
 Next, it's time to create the CHUID and CBEFF objects, which also updates the
 Security Object as described below.
 
 ### Usage
-Change directory to the directory created by unpacking the gsa-icam-card-builder.zip file and 
+
+Change directory to the directory created by unpacking the gsa-icam-card-builder.zip file and
 run the following command:
 
 `java -classpath lib -jar gsa-icam-card-builder.jar gov.gsa.icamcardbuilder.app.Gui`
@@ -113,18 +118,20 @@ run the following command:
 The scripts `start-signer.bat` and `start-signer.sh` will do this for you.
 
 ### Where the Files are Created
+
 Generally, you should stage your CBEFF containers and Security Object files
-in a working directory. The application will write new files into the directory 
+in a working directory. The application will write new files into the directory
 of the CBEFF and/or Security Object files respectively.  It's most convenient if
  your `contentFile` and `securityObjectFile` are in the same working directory.
- The reference implementation does *not* use a working directory, writing 
+ The reference implementation does *not* use a working directory, writing
  directly to directories that can be used to create the cards.  The reference
  implementation's content signer properties files contain paths to objects
  based on being run from the top level directory of the project.
 
 ### Content Signer Property Files
+
 To make it easy to test and run, the "File" menu includes a "Open Config"
-menu item that enables you to easily load a properties file that contains the 
+menu item that enables you to easily load a properties file that contains the
 following setup on a per-container basis.  Below are some examples from the
 reference implementation.
 
@@ -145,7 +152,7 @@ reference implementation.
   menu.
 
 * `fascnOid=2.16.840.1.101.3.6.6`
- 
+
   This is the FASC-N OID.  If you change this, you could test whether a
   validation system fails to read the CBEFF because the FASC-N is missing.
 
@@ -178,7 +185,7 @@ reference implementation.
 * `expirationDate=20321231000000`
 
   This is the expiration date of the CHUID or `notAfter` date of a biometric.  In
-  the case of the CHUID, only the first 8 digits are used. 
+  the case of the CHUID, only the first 8 digits are used.
 
 * `signingKeyFile=cards/ICAM_Card_Objects/ICAM_CA_and_Signer/gold_-_PIV_Content_Signer.p12`
 
@@ -207,25 +214,25 @@ reference implementation.
   the cardholder name.
 
 * `employeeAffiliation=4700`
-|This parameter is only used for Printed Information containers.  It specifies
+  This parameter is only used for Printed Information containers.  It specifies
   the cardholder's employee affiliation, usually an agency code.
   
 * `agencyCardSerialNumber=123456789`
   This parameter is only used for Printed Information containers.  It specifies
   the agency card serial number printed on the back of the card.
-For Discovery Object properties files, two additional properties are used.
-#If both pivCardApplication and pinUsagePolicy are empty,
-#the Discovery Object will be written with a zero length and its
-#hash will be removed from the Security Object's DG Hashes.
+  For Discovery Object properties files, two additional properties are used.
+  If both pivCardApplication and pinUsagePolicy are empty,
+  the Discovery Object will be written with a zero length and its
+  hash will be removed from the Security Object's DG Hashes.
 * `pivCardApplicationAid=a000000308000010000100`
   This allows you to alter the PIV card AID, which you should do only if you
   know what you're doing.
 
-  `pinUsagePolicy=6010`
-  PIN useage policy controls whether the Application PIN or Global PIN is
+* `pinUsagePolicy=6010`
+  PIN usage policy controls whether the Application PIN or Global PIN is
   the preferred PIN. The following rules apply:
-  1. No discovery object (insert '#' in front of this and the previous property. 
-  Your system should send the PIV application PIN to the card and indicate it is the PIV 
+  1. No discovery object (insert '#' in front of this and the previous property.
+  Your system should send the PIV application PIN to the card and indicate it is the PIV
   Application PIN.
   2. Discovery object is present and `pinUsagePolicy` is set to 4000.  Your system
   should send the PIV application PIN to the card and indicate it is the PIV Application PIN.
@@ -241,6 +248,7 @@ CBEFFs.  The intent is to create property files for each biometric object
 on each ICAM card.
 
 ### Re-sign your signed objects
+
 Next, use the `start-signer.sh` or `start-signer.bat` script to start up the GSA
 PIV Signer tool.  Use the *File -> Open* menu option to choose a properties file from
 the `config` directory. The contents of that file will be rendered in the text fields
@@ -251,7 +259,7 @@ time stamp and moved to a backup directory beneath the directory containing the
 file being re-signed.  The newly-created file is then written to disk using its
 original name.
 
-If you plan to update multiple biometrics on the same card, remember that the 
+If you plan to update multiple biometrics on the same card, remember that the
 Security Object file is being updated as you sign each biometric.  When it's time
 to write the containers to the card, be sure that you load all newly-signed biometric
 containers as well as the new security object at the same time.  Otherwise, the
@@ -259,6 +267,7 @@ containers on the card will get out of sync, and you'll encounter errors that th
 hashes on the security object don't match the container hashes.
 
 ## Future Additions and Enhancements
+
 Work remaining to be done if we want this to be really close to perfect:
 
   1. Add a data populator function
@@ -270,6 +279,7 @@ See the [list of issues](https://github.com/GSA/gsa-icam-card-builder/issues) fo
 more information.
 
 ## Source code
+
 A source code ZIP file is provided.  It includes all of the source as well
 as the artifacts needed to build, debug, and run this tool from with Eclipse.
 You can either clone the GitHub directory, you can download the appropriate
