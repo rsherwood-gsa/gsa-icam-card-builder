@@ -254,9 +254,9 @@ if [ z"$ENDDATE" == "z" ]; then
 fi
 
 if [ $SPECIAL -eq 1 ]; then
-	CNF="$(pwd)/$PREFIX-$TYPE.cnf"
+	CNF="$(pwd)/cnf/$PREFIX-$TYPE.cnf"
 else
-	CNF="$(pwd)/$PREFIX-$TYPE-c$NUMBER.cnf"
+	CNF="$(pwd)/cnf/$PREFIX-$TYPE-c$NUMBER.cnf"
 fi
 
 if [ ! -f "$CNF" ]; then
