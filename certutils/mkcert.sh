@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Usage: mkcert.sh 
 #   -s|--subject subjectDN 
@@ -356,6 +356,7 @@ pushd data
 	# Get the signer private and public keys
 
 	openssl pkcs12 \
+		-legacy \
 		-in $SCA_P12 \
 		-nocerts \
 		-nodes \
@@ -364,6 +365,7 @@ pushd data
 		-out pem/$(basename $SCA_P12 .p12).private.pem
 
 	openssl pkcs12 \
+		-legacy \
 		-in $SCA_P12 \
 		-clcerts \
 		-passin pass: \
