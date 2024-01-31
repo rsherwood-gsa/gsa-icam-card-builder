@@ -384,7 +384,7 @@ reindex() {
 			fi
 
 			# Figure out *-index.txt names
-			AKID=$(openssl x509 -in $F -text -noout 2>&10 | grep keyid: | sed 's/\s//g; s/keyid://g; s/://g')
+			AKID=$(openssl x509 -in $F -text -noout 2>&10 | grep -A 1 "X509v3 Authority Key Identifier:"| tail -n 1 | sed 's/^ *//; s/://g; s/keyid//g')
 
 			case $AKID in
 				$PIV_GEN3_P256)
